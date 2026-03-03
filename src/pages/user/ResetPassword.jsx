@@ -6,7 +6,7 @@ const ResetPassword = () => {
     e.preventDefault();
     try {
       await axios.post(
-        `http://localhost:8000/api/auth/reset-password/${token}`,
+        `https://lyly-gifts-backend.onrender.com/api/auth/reset-password/${token}`,
         { password },
       );
       alert("Амжилттай! Одоо шинэ нууц үгээрээ нэвтэрнэ үү.");

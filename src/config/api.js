@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8000/api", // Зөвхөн суурь хаягийг нь бичнэ
+  baseURL: "https://lyly-gifts-backend.onrender.com/api", // Зөвхөн суурь хаягийг нь бичнэ
 });
 
 API.interceptors.request.use((config) => {

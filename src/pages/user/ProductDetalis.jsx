@@ -11,7 +11,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import customAPI from "../../config/api.js";
-const API = "http://localhost:8000/api/product";
+const API = "https://lyly-gifts-backend.onrender.com/api/product";
 
 const ProductDetails = () => {
   const { id } = useParams();

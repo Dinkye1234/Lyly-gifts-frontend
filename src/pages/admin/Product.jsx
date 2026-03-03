@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const API = "http://localhost:8000/api/product";
+const API = "https://lyly-gifts-backend.onrender.com/api/product";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -109,8 +109,8 @@ const Products = () => {
 
       setProducts(
         products.map((p) =>
-          p._id === editingProduct._id ? res.data.product : p
-        )
+          p._id === editingProduct._id ? res.data.product : p,
+        ),
       );
       alert("Амжилттай шинэчиллээ");
 

@@ -9,11 +9,14 @@ const Comments = () => {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/contact", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/contact",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
       if (res.status === 401) {
         alert("Таны нэвтрэх хугацаа дууссан байна. Дахин нэвтэрнэ үү.");
         localStorage.removeItem("token");
@@ -45,12 +48,15 @@ const Comments = () => {
     if (!window.confirm("Устгахдаа итгэлтэй байна уу?")) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/contact/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        `https://lyly-gifts-backend.onrender.com/api/contact/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
 
       if (res.ok) {
         // Сервер дээр амжилттай устсан бол жагсаалтаас хасна

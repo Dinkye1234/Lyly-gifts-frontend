@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import ProductCard from "../../Components/ProductCard";
 
-const API = "http://localhost:8000/api/product";
+const API = "https://lyly-gifts-backend.onrender.com/api/product";
 
 const Home = () => {
   const [products, setProducts] = useState([]);

@@ -8,11 +8,14 @@ const Orders = () => {
   // Серверээс захиалгыг татаж авах
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/orders", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/orders",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
       const data = await res.json();
       setOrders(data);
       setLoading(false);
@@ -32,12 +35,15 @@ const Orders = () => {
     if (!window.confirm("Энэ захиалгыг устгах уу?")) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/orders/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        `https://lyly-gifts-backend.onrender.com/api/orders/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
 
       if (!res.ok) throw new Error("Устгаж чадсангүй");
 
@@ -70,14 +76,17 @@ const Orders = () => {
 
   const updateStatus = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/orders/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        `https://lyly-gifts-backend.onrender.com/api/orders/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ status: "Баталгаажсан" }),
         },
-        body: JSON.stringify({ status: "Баталгаажсан" }),
-      });
+      );
 
       if (res.ok) {
         setOrders((prev) => prev.filter((o) => o._id !== id));
@@ -155,8 +164,8 @@ const Orders = () => {
                       o.status === "pending"
                         ? "bg-green-500"
                         : o.status === "processing"
-                        ? "bg-yellow-500"
-                        : "bg-blue-500"
+                          ? "bg-yellow-500"
+                          : "bg-blue-500"
                     }`}
                   >
                     {o.status}
@@ -175,7 +184,7 @@ const Orders = () => {
                   onClick={() =>
                     updateStatus(
                       o._id,
-                      o.status === "pending" ? "processing" : "completed"
+                      o.status === "pending" ? "processing" : "completed",
                     )
                   }
                   className="w-1/2 bg-green-500 text-white py-2 rounded hover:bg-hreen-600 transition-all duration-200"

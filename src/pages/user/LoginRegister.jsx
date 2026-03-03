@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const API = "http://localhost:8000/api/auth";
+const API = "https://lyly-gifts-backend.onrender.com/api/auth";
 
 const LoginRegister = () => {
   const navigate = useNavigate();

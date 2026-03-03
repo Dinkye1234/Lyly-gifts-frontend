@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import { Filter, Grid, List, Search, SlidersHorizontal } from "lucide-react";
 import ProductCard from "../../Components/ProductCard";
-const API = "http://localhost:8000/api/product";
+const API = "https://lyly-gifts-backend.onrender.com/api/product";
 
 const Shop = () => {
   const [viewMode, setViewMode] = useState("grid");

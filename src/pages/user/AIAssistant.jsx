@@ -35,9 +35,12 @@ const AIAssistant = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:8000/api/ai/chat", {
-        messages: [...messages, userMessage],
-      });
+      const res = await axios.post(
+        "https://lyly-gifts-backend.onrender.com/api/ai/chat",
+        {
+          messages: [...messages, userMessage],
+        },
+      );
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: res.data.message },

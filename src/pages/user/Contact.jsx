@@ -34,14 +34,17 @@ const Contact = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("http://localhost:8000/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Token-оо энд нэг удаа дамжуулна
+      const response = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/contact",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Token-оо энд нэг удаа дамжуулна
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
+      );
 
       // 1. Токены хугацаа дууссан эсэхийг хамгийн түрүүнд шалгах
       if (response.status === 401) {

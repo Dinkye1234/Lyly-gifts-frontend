@@ -12,18 +12,21 @@ const Checkout = () => {
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/orders/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/orders/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            items,
+            totalPrice,
+            address,
+          }),
         },
-        body: JSON.stringify({
-          items,
-          totalPrice,
-          address,
-        }),
-      });
+      );
 
       const data = await res.json();
 
