@@ -7,11 +7,14 @@ const Confirmed = () => {
 
   const fetchConfirmedOrders = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/orders/confirmed", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/orders/confirmed",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
 
       if (!res.ok) {
         setOrders([]);
@@ -36,7 +39,7 @@ const Confirmed = () => {
   const deleteOrder = async (id) => {
     if (!window.confirm("Устгахдаа итгэлтэй байна уу?")) return;
     try {
-      await fetch(`http://localhost:8000/api/orders/${id}`, {
+      await fetch(`https://lyly-gifts-backend.onrender.com/api/orders/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -54,7 +57,7 @@ const Confirmed = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8000/api/orders/deliver/${order._id}`,
+        `https://lyly-gifts-backend.onrender.com/api/orders/deliver/${order._id}`,
         {
           method: "POST",
           headers: {
@@ -95,7 +98,7 @@ const Confirmed = () => {
     try {
       await Promise.all(
         selectedOrders.map((id) =>
-          fetch(`http://localhost:8000/api/orders/${id}`, {
+          fetch(`https://lyly-gifts-backend.onrender.com/api/orders/${id}`, {
             method: "DELETE",
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -12,7 +12,7 @@ const AdminLogin = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const API_URL = "http://localhost:8000/api/admin";
+  const API_URL = "https://lyly-gifts-backend.onrender.com/api/admin";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -69,7 +69,7 @@ const AdminLogin = ({ onLogin }) => {
 
     try {
       const res = await fetch(
-        `http://localhost:8000/api/admin/reset-password/${cleanOtp}`,
+        `https://lyly-gifts-backend.onrender.com/api/admin/reset-password/${cleanOtp}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

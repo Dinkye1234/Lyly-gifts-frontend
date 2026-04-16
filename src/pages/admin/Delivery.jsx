@@ -15,7 +15,7 @@ import {
   Phone,
 } from "lucide-react";
 
-const socket = io("http://localhost:8000");
+const socket = io("https://lyly-gifts-backend.onrender.com");
 
 const DeliveryAdmin = () => {
   const [deliveries, setDeliveries] = useState([]);
@@ -25,7 +25,7 @@ const DeliveryAdmin = () => {
   const fetchDeliveries = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:8000/api/delivery/list");
+      const res = await axios.get("https://lyly-gifts-backend.onrender.com/api/delivery/list");
       setDeliveries(res.data);
     } catch (err) {
       console.error("Алдаа:", err);
@@ -69,7 +69,7 @@ const DeliveryAdmin = () => {
   const deleteSelected = async () => {
     if (!window.confirm("Сонгосон хүргэлтүүдийг устгах уу?")) return;
     try {
-      await axios.delete("http://localhost:8000/api/delivery/delete-multiple", {
+      await axios.delete("https://lyly-gifts-backend.onrender.com/api/delivery/delete-multiple", {
         data: { deliveryIds: selectedDeliveries },
       });
       setDeliveries(

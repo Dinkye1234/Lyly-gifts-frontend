@@ -6,7 +6,7 @@ import L from "leaflet";
 import { ArrowLeft } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 
-const socket = io("http://localhost:8000");
+const socket = io("https://lyly-gifts-backend.onrender.com");
 
 const deliveryIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png",

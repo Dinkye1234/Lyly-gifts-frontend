@@ -13,7 +13,9 @@ const Comments = () => {
     setLoading(true);
     try {
       // Бүх бүтээгдэхүүнийг татах (Дотор нь сэтгэгдлүүд байгаа)
-      const prodRes = await fetch("http://localhost:8000/api/product");
+      const prodRes = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/product",
+      );
       const products = await prodRes.json();
 
       // Бүх бүтээгдэхүүний сэтгэгдлийг нэг массив болгох
@@ -32,9 +34,12 @@ const Comments = () => {
       );
 
       // Холбоо барих мессежүүдийг татах
-      const contactRes = await fetch("http://localhost:8000/api/contact", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const contactRes = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/contact",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       const contactData = await contactRes.json();
       if (contactRes.ok) setContactMessages(contactData);
     } catch (err) {
@@ -55,7 +60,7 @@ const Comments = () => {
     try {
       // Таны Backend-д Review устгах endpoint байх ёстой: DELETE /api/product/:prodId/review/:revId
       const res = await fetch(
-        `http://localhost:8000/api/product/${productId}/review/${reviewId}`,
+        `https://lyly-gifts-backend.onrender.com/api/product/${productId}/review/${reviewId}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },

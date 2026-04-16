@@ -33,22 +33,25 @@ const Checkout = () => {
   const handleSubmit = async () => {
     try {
       const fullLocation = `${address.district}, ${address.khoroo}, ${address.detail}`;
-      const res = await fetch("http://localhost:8000/api/orders/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          items,
-          totalPrice,
-          address: {
-            name: address.name,
-            phone: address.phone,
-            location: fullLocation,
+      const res = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/orders/create",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }),
-      });
+          body: JSON.stringify({
+            items,
+            totalPrice,
+            address: {
+              name: address.name,
+              phone: address.phone,
+              location: fullLocation,
+            },
+          }),
+        },
+      );
 
       if (res.ok) {
         alert("Захиалга амжилттай илгээгдлээ!");

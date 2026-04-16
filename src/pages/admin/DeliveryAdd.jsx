@@ -20,9 +20,12 @@ const DeliveryManList = () => {
 
   const fetchDeliveryMen = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/delivery-man", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://lyly-gifts-backend.onrender.com/api/delivery-man",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       console.log(res.data); // Хариу response ямар хэлбэртэй байгааг шалгах
 
@@ -49,16 +52,20 @@ const DeliveryManList = () => {
     try {
       if (editingId) {
         await axios.put(
-          `http://localhost:8000/api/delivery-man/${editingId}`,
+          `https://lyly-gifts-backend.onrender.com/api/delivery-man/${editingId}`,
           form,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
         );
       } else {
-        await axios.post("http://localhost:8000/api/delivery-man", form, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.post(
+          "https://lyly-gifts-backend.onrender.com/api/delivery-man",
+          form,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
       }
       setForm({ name: "", email: "", password: "" });
       setEditingId(null);
@@ -76,9 +83,12 @@ const DeliveryManList = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Устгах уу?")) {
       try {
-        await axios.delete(`http://localhost:8000/api/delivery-man/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(
+          `https://lyly-gifts-backend.onrender.com/api/delivery-man/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
         fetchDeliveryMen();
       } catch (err) {
         console.error(err);

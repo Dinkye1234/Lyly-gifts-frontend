@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const customAPI = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: "https://lyly-gifts-backend.onrender.com/api",
 });
 customAPI.interceptors.request.use(
   (config) => {

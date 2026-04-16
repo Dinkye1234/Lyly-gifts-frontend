@@ -13,7 +13,7 @@ const DeliveryLogin = ({ onLogin }) => {
   const navigate = useNavigate();
 
   // Backend endpoint нь админ логинтой ижил боловч role-оор нь ялгана
-  const API_URL = "http://localhost:8000/api/delivery-login";
+  const API_URL = "https://lyly-gifts-backend.onrender.com/api/delivery-login";
 
   // ... (бусад import хэвээрээ)
 

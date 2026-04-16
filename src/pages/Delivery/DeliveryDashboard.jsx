@@ -11,7 +11,7 @@ import {
   User,
 } from "lucide-react";
 
-const socket = io("http://localhost:8000");
+const socket = io("https://lyly-gifts-backend.onrender.com/api");
 
 const DeliveryDashboard = () => {
   const [deliveries, setDeliveries] = useState([]);
@@ -23,7 +23,9 @@ const DeliveryDashboard = () => {
 
   const fetchDeliveries = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/delivery/list");
+      const res = await axios.get(
+        "https://lyly-gifts-backend.onrender.com/api/delivery/list",
+      );
       setDeliveries(res.data.filter((d) => d.status !== "completed"));
     } catch (err) {
       console.error("Жагсаалт авахад алдаа гарлаа");
@@ -64,10 +66,13 @@ const DeliveryDashboard = () => {
     if (!currentDeliveryId) return alert("Дахин нэвтэрнэ үү.");
 
     try {
-      await axios.patch(`http://localhost:8000/api/delivery/${id}`, {
-        status,
-        deliveryManId: currentDeliveryId,
-      });
+      await axios.patch(
+        `https://lyly-gifts-backend.onrender.com/api/delivery/${id}`,
+        {
+          status,
+          deliveryManId: currentDeliveryId,
+        },
+      );
 
       if (status === "processing") {
         // 1. Socket өрөөндөө нэгдэх

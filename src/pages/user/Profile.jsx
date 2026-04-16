@@ -47,7 +47,7 @@ const Profile = () => {
       try {
         setLoadingOrders(true);
         const res = await axios.get(
-          "http://localhost:8000/api/orders/my-orders",
+          "https://lyly-gifts-backend.onrender.com/api/orders/my-orders",
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -86,7 +86,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
-        "http://localhost:8000/api/users/profile", // Таны API route
+        "https://lyly-gifts-backend.onrender.com/api/users/profile", // Таны API route
         formData,
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -125,10 +125,13 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete("http://localhost:8000/api/orders/delete-multiple", {
-        data: { orderIds: selectedOrders },
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        "https://lyly-gifts-backend.onrender.com/api/orders/delete-multiple",
+        {
+          data: { orderIds: selectedOrders },
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       setOrders((prev) => prev.filter((o) => !selectedOrders.includes(o._id)));
       setSelectedOrders([]);
       alert("Амжилттай устгалаа");

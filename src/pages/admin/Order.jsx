@@ -7,11 +7,14 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/orders", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        "https://lyly-gifts-backend.onrender.com/api/orders",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
       const data = await res.json();
       // Хамгийн сүүлд ирсэн захиалгыг эхэнд нь гаргахын тулд reverse() ашиглав
       setOrders(Array.isArray(data) ? data.reverse() : []);
@@ -29,12 +32,15 @@ const Orders = () => {
 
   // Ганцарчилсан устгах функц (alert-гүй хувилбар - дотоод хэрэглээнд)
   const performDelete = async (id) => {
-    const res = await fetch(`http://localhost:8000/api/orders/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+    const res = await fetch(
+      `https://lyly-gifts-backend.onrender.com/api/orders/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       },
-    });
+    );
     if (!res.ok) throw new Error(`ID: ${id} устгаж чадсангүй`);
     return id;
   };
@@ -81,14 +87,17 @@ const Orders = () => {
 
   const updateStatus = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/orders/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const res = await fetch(
+        `https://lyly-gifts-backend.onrender.com/api/orders/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ status: "Баталгаажсан" }),
         },
-        body: JSON.stringify({ status: "Баталгаажсан" }),
-      });
+      );
 
       if (res.ok) {
         // Баталгаажсан захиалгыг жагсаалтаас хасах (хэрэв та өөр таб руу шилжүүлж байгаа бол)

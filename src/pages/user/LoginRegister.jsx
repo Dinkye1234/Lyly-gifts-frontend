@@ -62,8 +62,16 @@ const LoginRegister = () => {
           password: formData.password,
         });
         localStorage.setItem("token", res.data.token);
+        const userData = res.data.user || {
+          email: formData.email,
+          name: res.data.name || "Хэрэглэгч",
+        };
+        localStorage.setItem("userInfo", JSON.stringify(userData));
+        window.dispatchEvent(new Event("storage"));
+
         alert("Амжилттай нэвтэрлээ");
-        navigate(-1);
+        navigate("/");
+        window.location.reload();
       } else {
         const res = await axios.post(`${API}/register`, {
           name: formData.name,
@@ -80,14 +88,13 @@ const LoginRegister = () => {
     }
   };
 
-  // 1-р алхам: И-мэйл рүү код илгээх
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       await axios.post(`${API}/forgot-password`, { email: emailForReset });
       alert("Баталгаажуулах код и-мэйл рүү илгээгдлээ.");
-      setStep(2); // Дараагийн алхам руу шилжих
+      setStep(2);
     } catch (err) {
       alert(err.response?.data?.message || "Алдаа гарлаа");
     } finally {
@@ -95,7 +102,6 @@ const LoginRegister = () => {
     }
   };
 
-  // 2-р алхам: Код болон шинэ нууц үгийг баталгаажуулах
   const handleResetWithOTP = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -132,10 +138,9 @@ const LoginRegister = () => {
       </h2>
 
       {isForgot ? (
-        /* --- НУУЦ ҮГ СЭРГЭЭХ ЛОГИК (STEPS) --- */
+        /* --- НУУЦ ҮГ СЭРГЭЭХ ЛОГИК   --- */
         <div className="space-y-4">
           {step === 1 ? (
-            /* Алхам 1: И-мэйл оруулах */
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <p className="text-sm text-gray-500 mb-4 text-center">
                 Бүртгэлтэй и-мэйл хаягаа оруулна уу. Бид танд 6 оронтой код
@@ -161,7 +166,7 @@ const LoginRegister = () => {
               </button>
             </form>
           ) : (
-            /* Алхам 2: Код болон шинэ нууц үг оруулах */
+            /*     Код болон шинэ нууц үг оруулах */
             <form onSubmit={handleResetWithOTP} className="space-y-4">
               <p className="text-sm text-green-600 mb-4 text-center font-medium">
                 Таны {emailForReset} хаяг руу ирсэн кодыг оруулна уу.
