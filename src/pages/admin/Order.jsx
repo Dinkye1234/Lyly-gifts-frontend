@@ -1,203 +1,305 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-const Orders = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedOrders, setSelectedOrders] = useState([]);
+const API = "http://localhost:8000/api/product";
 
-  // Серверээс захиалгыг татаж авах
-  const fetchOrders = async () => {
-    try {
-      const res = await fetch(
-        "https://lyly-gifts-backend.onrender.com/api/orders",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
-      const data = await res.json();
-      setOrders(data);
-      setLoading(false);
-    } catch (err) {
-      console.error(err);
-      alert("Захиалгыг татаж чадсангүй");
-      setLoading(false);
-    }
-  };
+const Products = () => {
+  const [products, setProducts] = useState([]);
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    price: "",
+    category: "",
+    about: "",
+    ingredients: "",
+    image: null,
+    featured: false,
+  });
+  const [editingProduct, setEditingProduct] = useState(null); // Засах бүтээгдэхүүн
 
   useEffect(() => {
-    fetchOrders();
+    fetchProducts();
   }, []);
 
-  // Захиалга устгах
-  const deleteOrder = async (id) => {
-    if (!window.confirm("Энэ захиалгыг устгах уу?")) return;
+  const fetchProducts = async () => {
+    const res = await axios.get(API);
+    setProducts(res.data);
+  };
+
+  const handleFileChange = (e) => {
+    setNewProduct({ ...newProduct, image: e.target.files[0] });
+  };
+
+  const addProduct = async () => {
+    if (
+      !newProduct.name ||
+      !newProduct.price ||
+      !newProduct.image ||
+      !newProduct.category ||
+      !newProduct.about
+    )
+      return alert("Бүх талбарыг бөглөнө үү!");
 
     try {
-      const res = await fetch(
-        `https://lyly-gifts-backend.onrender.com/api/orders/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        },
-      );
+      const formData = new FormData();
+      formData.append("name", newProduct.name);
+      formData.append("price", newProduct.price);
+      formData.append("category", newProduct.category);
+      formData.append("about", newProduct.about);
+      formData.append("image", newProduct.image);
+      formData.append("featured", newProduct.featured);
 
-      if (!res.ok) throw new Error("Устгаж чадсангүй");
+      const res = await axios.post(`${API}/add`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      // Frontend дээр устгах
-      setOrders((prev) => prev.filter((o) => o._id !== id));
-      setSelectedOrders((prev) => prev.filter((sid) => sid !== id));
+      setProducts([...products, res.data.product]);
+      alert(res.data.msg || "Амжилттай хадгаллаа");
+
+      setNewProduct({
+        name: "",
+        price: "",
+        category: "",
+        about: "",
+        image: null,
+        featured: false,
+      });
     } catch (err) {
       console.error(err);
-      alert(err.message);
+      alert("Бүтээгдэхүүн хадгалахад алдаа гарлаа");
     }
   };
 
-  // Сонгосон бүх захиалгыг устгах
-  const deleteSelected = async () => {
-    if (!window.confirm("Сонгосон захиалгуудыг устгах уу?")) return;
-
-    for (const id of selectedOrders) {
-      await deleteOrder(id);
-    }
-    setSelectedOrders([]);
+  const deleteProduct = async (id) => {
+    await axios.delete(`${API}/${id}`);
+    setProducts(products.filter((p) => p._id !== id));
   };
 
-  const toggleSelect = (id) => {
-    if (selectedOrders.includes(id)) {
-      setSelectedOrders(selectedOrders.filter((sid) => sid !== id));
-    } else {
-      setSelectedOrders([...selectedOrders, id]);
-    }
+  const startEditing = (product) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      about: product.about,
+      ingredients: product.ingredients || "",
+      image: product.image,
+      featured: product.featured,
+    });
   };
 
-  const updateStatus = async (id) => {
+  const saveEdit = async () => {
+    if (!editingProduct) return;
+
     try {
-      const res = await fetch(
-        `https://lyly-gifts-backend.onrender.com/api/orders/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ status: "Баталгаажсан" }),
-        },
-      );
+      const formData = new FormData();
+      formData.append("name", newProduct.name);
+      formData.append("price", newProduct.price);
+      formData.append("category", newProduct.category);
+      formData.append("about", newProduct.about);
+      formData.append("ingredients", newProduct.ingredients);
 
-      if (res.ok) {
-        setOrders((prev) => prev.filter((o) => o._id !== id));
-        alert("Захиалга баталгаажлаа!");
+      if (newProduct.image instanceof File) {
+        formData.append("image", newProduct.image);
       }
+      formData.append("featured", newProduct.featured);
+
+      const res = await axios.patch(`${API}/${editingProduct._id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setProducts(
+        products.map((p) =>
+          p._id === editingProduct._id ? res.data.product : p,
+        ),
+      );
+      alert("Амжилттай шинэчиллээ");
+
+      setEditingProduct(null);
+      setNewProduct({
+        name: "",
+        price: "",
+        category: "",
+        about: "",
+        ingredients: "",
+        image: null,
+        featured: false,
+      });
     } catch (err) {
-      alert("Алдаа гарлаа");
+      console.error(err);
+      alert("Шинэчлэхэд алдаа гарлаа");
     }
   };
-
-  if (loading) return <p className="p-4">Захиалгыг татаж байна...</p>;
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
-        <h1 className="text-2xl font-bold">Захиалгууд</h1>
-        {selectedOrders.length > 0 && (
-          <button
-            onClick={deleteSelected}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-all duration-200 text-sm sm:text-base"
+    <div>
+      <h1 className="text-2xl font-bold mb-6">Бүтээгдэхүүн удирдах</h1>
+
+      <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <h2 className="text-lg font-semibold mb-3">
+          {editingProduct ? "Бүтээгдэхүүн засах" : "Шинэ бүтээгдэхүүн нэмэх"}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <input
+            type="text"
+            placeholder="Нэр"
+            className="border p-2 rounded-lg"
+            value={newProduct.name}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, name: e.target.value })
+            }
+          />
+          <input
+            type="number"
+            placeholder="Үнэ"
+            className="border p-2 rounded-lg"
+            value={newProduct.price}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, price: e.target.value })
+            }
+          />
+          <select
+            className="border p-2 rounded-lg"
+            value={newProduct.category}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, category: e.target.value })
+            }
           >
-            Сонгосон {selectedOrders.length} захиалгыг устгах
+            <option value="">Категори сонгох</option>
+            <option value="Валентины багц">Валентины багц</option>
+            <option value="Төрсөн өдөр">Төрсөн өдөр</option>
+            <option value="Өөрийгөө эрхлүүлэх">Өөрийгөө эрхлүүлэх</option>
+            <option value="Ойн баяр">Ойн баяр</option>
+            <option value="Гэрлэлтийн бэлэг">Гэрлэлтийн бэлэг</option>
+            <option value="Хайртдаа бэлэг">Хайртдаа бэлэг</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Бүтээгдэхүүний тухай"
+            className="border p-2 rounded-lg"
+            value={newProduct.about}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, about: e.target.value })
+            }
+          />
+          <input
+            type="text"
+            placeholder="Найрлага (Жишээ: Самар, Сүү)"
+            className="border p-2 rounded-lg"
+            value={newProduct.ingredients}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, ingredients: e.target.value })
+            }
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="border p-2 rounded-lg"
+          />
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={newProduct.featured}
+              onChange={(e) =>
+                setNewProduct({ ...newProduct, featured: e.target.checked })
+              }
+              className="w-4 h-4"
+            />
+            Онцгой бэлэг
+          </label>
+        </div>
+
+        {newProduct.image && (
+          <div className="mt-2">
+            <img
+              src={
+                typeof newProduct.image === "string"
+                  ? newProduct.image
+                  : URL.createObjectURL(newProduct.image)
+              }
+              alt="preview"
+              className="w-20 h-20 object-cover rounded-lg"
+            />
+          </div>
+        )}
+
+        <button
+          onClick={editingProduct ? saveEdit : addProduct}
+          className="mt-4 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+        >
+          {editingProduct ? "Хадгалах" : "Нэмэх"}
+        </button>
+        {editingProduct && (
+          <button
+            onClick={() => {
+              setEditingProduct(null);
+              setNewProduct({
+                name: "",
+                price: "",
+                category: "",
+                about: "",
+                image: null,
+                featured: false,
+              });
+            }}
+            className="mt-4 ml-2 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500"
+          >
+            Цуцлах
           </button>
         )}
       </div>
 
-      {orders.length === 0 ? (
-        <p className="text-center text-gray-500 py-10">
-          Захиалга байхгүй байна.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {orders.map((o) => (
-            <div
-              key={o._id}
-              className="border rounded-lg p-4 shadow hover:shadow-md transition-all duration-200 bg-white"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="font-semibold text-lg">
-                  Захиалга #{o._id.slice(-5)}
-                </h2>
-                <input
-                  type="checkbox"
-                  checked={selectedOrders.includes(o._id)}
-                  onChange={() => toggleSelect(o._id)}
-                  className="h-4 w-4"
-                />
-              </div>
-
-              <div className="space-y-1 text-gray-700">
-                <p>
-                  <span className="font-medium">Хэрэглэгчийн нэр:</span>{" "}
-                  {o.address?.name || o.userId || "Мэдээлэл алга"}
-                </p>
-                <p>
-                  <span className="font-medium">Утас:</span>{" "}
-                  {o.address?.phone || "Мэдээлэл алга"}
-                </p>
-                <p>
-                  <span className="font-medium">Хаяг:</span>{" "}
-                  {o.address?.location || "Мэдээлэл алга"}
-                </p>
-                <p>
-                  <span className="font-medium">Бараа:</span>{" "}
-                  {o.items.map((i) => `${i.name} x ${i.quantity}`).join(", ")}
-                </p>
-                <p>
-                  <span className="font-medium">Нийт:</span> ₮
-                  {o.totalPrice.toLocaleString()}
-                </p>
-                <p>
-                  <span className="font-medium">Төлөв:</span>{" "}
-                  <span
-                    className={`px-2 py-1 rounded-full text-white text-sm ${
-                      o.status === "pending"
-                        ? "bg-green-500"
-                        : o.status === "processing"
-                          ? "bg-yellow-500"
-                          : "bg-blue-500"
-                    }`}
+      <div className="overflow-x-auto rounded-lg shadow md-6">
+        <table className="w-full bg-white">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-2 border">Зураг</th>
+              <th className="p-2 border">Нэр</th>
+              <th className="p-2 border">Үнэ</th>
+              <th className="p-2 border">Категори</th>
+              <th className="p-2 border">Бүтээгдэхүүний тухай</th>
+              <th className="p-2 border">Огноо</th>
+              <th className="p-2 border">Үйлдэл</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <tr key={p._id} className="text-center">
+                <td className="p-2 border">
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    className="w-16 h-16 mx-auto rounded-lg"
+                  />
+                </td>
+                <td className="p-2 border">{p.name}</td>
+                <td className="p-2 border">{p.price}₮</td>
+                <td className="p-2 border">{p.category}</td>
+                <td className="p-2 border">{p.about}</td>
+                <td className="p-2 border">
+                  {new Date(p.saledate).toLocaleString()}
+                </td>
+                <td className="p-2 border flex flex-col gap-1">
+                  <button
+                    onClick={() => startEditing(p)}
+                    className="text-blue-500 hover:underline"
                   >
-                    {o.status}
-                  </span>
-                </p>
-              </div>
-
-              <div className="flex gap-1 mt-3">
-                <button
-                  onClick={() => deleteOrder(o._id)}
-                  className="w-1/2 bg-red-500 text-white py-2 rounded hover:bg-red-600 transition-all duration-200"
-                >
-                  Устгах
-                </button>
-                <button
-                  onClick={() =>
-                    updateStatus(
-                      o._id,
-                      o.status === "pending" ? "processing" : "completed",
-                    )
-                  }
-                  className="w-1/2 bg-green-500 text-white py-2 rounded hover:bg-hreen-600 transition-all duration-200"
-                >
-                  Баталгаажуулах
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+                    Засах
+                  </button>
+                  <button
+                    onClick={() => deleteProduct(p._id)}
+                    className="text-red-500 hover:underline"
+                  >
+                    Устгах
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default Orders;
+export default Products;

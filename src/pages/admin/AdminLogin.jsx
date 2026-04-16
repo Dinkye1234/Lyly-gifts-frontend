@@ -12,9 +12,8 @@ const AdminLogin = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const API_URL = "https://lyly-gifts-backend.onrender.com/api/admin";
+  const API_URL = "http://localhost:8000/api/admin";
 
-  // --- Ердийн нэвтрэх ---
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -23,18 +22,25 @@ const AdminLogin = ({ onLogin }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, password }),
       });
+
       const data = await res.json();
+
       if (!res.ok) return alert(data.msg);
 
-      localStorage.setItem("adminAuth", "true");
-      if (onLogin) onLogin();
-      navigate("/admin/products");
+      if (data.token) {
+        localStorage.setItem("adminToken", data.token);
+        localStorage.setItem("adminAuth", "true");
+
+        if (onLogin) onLogin(data.token);
+        navigate("/admin/products");
+      } else {
+        alert("Токен ирсэнгүй, системд алдаа гарлаа.");
+      }
     } catch (err) {
       alert("Сервертэй холбогдоход алдаа гарлаа!");
     }
   };
 
-  // --- Алхам 1: Код авах ---
   const handleForgotRequest = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -56,21 +62,18 @@ const AdminLogin = ({ onLogin }) => {
     }
   };
 
-  // --- Алхам 2: Нууц үг шинэчлэх ---
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
-    // otp утгыг string болгож, хоосон зайг арилгах
     const cleanOtp = otp.trim();
 
     try {
-      // URL-д : тэмдэг байж болохгүй! Зөвхөн утга нь очих ёстой.
       const res = await fetch(
-        `https://lyly-gifts-backend.onrender.com/api/admin/reset-password/${cleanOtp}`,
+        `http://localhost:8000/api/admin/reset-password/${cleanOtp}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password }), // password нь state-д байгаа шинэ нууц үг
+          body: JSON.stringify({ password }),
         },
       );
 

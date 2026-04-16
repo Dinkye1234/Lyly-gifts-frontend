@@ -6,6 +6,7 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 
 // Компонентууд болон хуудсууд
 import Header from "./Components/Header";
@@ -18,6 +19,8 @@ import ProductDetails from "./pages/user/ProductDetalis";
 import Checkout from "./pages/user/Checkout";
 import LoginPage from "./pages/user/LoginPage";
 import AIAssistant from "./pages/user/AIAssistant";
+import Profile from "./pages/user/Profile";
+import OrderTracking from "./pages/user/OrderTracking";
 
 // Admin
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -27,13 +30,18 @@ import Products from "./pages/admin/Product";
 import Orders from "./pages/admin/Order";
 import Delivery from "./pages/admin/Delivery";
 import Confirmed from "./pages/admin/confirmed.jsx";
+import AdminReport from "./pages/admin/AdminReports";
+import DeliveryAdd from "./pages/admin/DeliveryAdd";
 
-// Хэрэглэгчийн хэсгийн Layout (Header, Footer-тэй)
+// Delivery
+import DeliveryLogin from "./pages/Delivery/DeliveryLogin";
+import DeliveryDashboard from "./pages/Delivery/DeliveryDashboard";
+
 const UserLayout = () => (
   <>
     <Header />
     <main>
-      <Outlet /> {/* Энд Home, Shop, Cart гэх мэт хуудсууд орно */}
+      <Outlet />
     </main>
     <Footer />
   </>
@@ -48,16 +56,22 @@ const ProtectedRoute = ({ isAdmin }) => {
 };
 
 function App() {
-  const [isAdmin, setIsAdmin] = useState(
-    () => localStorage.getItem("adminAuth") === "true",
-  );
+  // Зөвхөн "true" гэж шалгах биш, токен байгаа эсэхийг давхар шалгана
+  const [isAdmin, setIsAdmin] = useState(() => {
+    const token = localStorage.getItem("token");
+    const auth = localStorage.getItem("adminAuth");
+    return token && auth === "true";
+  });
 
-  const handleLogin = () => {
+  const handleLogin = (token) => {
+    // Login хийхэд ирсэн токеныг энд хадгална
+    localStorage.setItem("token", token);
     localStorage.setItem("adminAuth", "true");
     setIsAdmin(true);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("adminAuth");
     setIsAdmin(false);
   };
@@ -73,6 +87,8 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/lily-ai" element={<AIAssistant />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/track/:id" element={<OrderTracking />} />
       </Route>
 
       <Route
@@ -94,7 +110,13 @@ function App() {
           <Route path="confirmed" element={<Confirmed />} />
           <Route path="delivery" element={<Delivery />} />
           <Route path="comments" element={<Comments />} />
+          <Route path="reports" element={<AdminReport />} />
+          <Route path="delivery-add" element={<DeliveryAdd />} />
         </Route>
+      </Route>
+      <Route>
+        <Route path="delivery" element={<DeliveryLogin />} />
+        <Route path="delivery/dashboard" element={<DeliveryDashboard />} />
       </Route>
     </Routes>
   );

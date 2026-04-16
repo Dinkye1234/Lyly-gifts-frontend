@@ -18,8 +18,10 @@ const AdminLayout = ({ onLogout }) => {
     { name: "Бүтээгдэхүүн", path: "/admin/products" },
     { name: "Захиалга", path: "/admin/orders" },
     { name: "Баталгаажсан", path: "/admin/confirmed" },
-    { name: "Сэтгэгдэл", path: "/admin/comments" },
     { name: "Хүргэлт", path: "/admin/delivery" },
+    { name: "Сэтгэгдэл", path: "/admin/comments" },
+    { name: "Тайлан", path: "/admin/reports" },
+    { name: "Хүргэгч удирдах", path: "/admin/delivery-add" },
   ];
 
   return (
@@ -62,7 +64,6 @@ const AdminLayout = ({ onLogout }) => {
         </button>
       </aside>
 
-      {/* Mobile Hamburger - баруун биш зүүн талд байрлуулсан */}
       <div className="lg:hidden fixed top-4 right-4 z-30">
         <button
           onClick={() => setSidebarOpen(true)}
@@ -72,7 +73,6 @@ const AdminLayout = ({ onLogout }) => {
         </button>
       </div>
 
-      {/* Main Content */}
       <main className="flex-1 p-6 overflow-y-auto">
         <Outlet />
       </main>

@@ -7,14 +7,11 @@ const Confirmed = () => {
 
   const fetchConfirmedOrders = async () => {
     try {
-      const res = await fetch(
-        "https://lyly-gifts-backend.onrender.com/api/orders/confirmed",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+      const res = await fetch("http://localhost:8000/api/orders/confirmed", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      );
+      });
 
       if (!res.ok) {
         setOrders([]);
@@ -39,7 +36,7 @@ const Confirmed = () => {
   const deleteOrder = async (id) => {
     if (!window.confirm("Устгахдаа итгэлтэй байна уу?")) return;
     try {
-      await fetch(`https://lyly-gifts-backend.onrender.com/api/orders/${id}`, {
+      await fetch(`http://localhost:8000/api/orders/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -51,8 +48,41 @@ const Confirmed = () => {
       alert("Устгаж чадсангүй");
     }
   };
+  const DeliverOrder = async (order) => {
+    // id-ийн оронд order объектыг дамжуулна
+    if (!window.confirm("Энэ захиалгыг хүргэлт рүү шилжүүлэх үү?")) return;
 
-  // Олноор устгах функц
+    try {
+      const res = await fetch(
+        `http://localhost:8000/api/orders/deliver/${order._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          // ЭНЭ ХЭСГИЙГ НЭМЭХ: Хэрэгцээт мэдээллийг илгээх
+          body: JSON.stringify({
+            customer: order.address?.name,
+            phone: order.address?.phone,
+            address: order.address?.location,
+            orderId: order._id,
+          }),
+        },
+      );
+
+      if (res.ok) {
+        setOrders(orders.filter((o) => o._id !== order._id));
+        alert("Хүргэлт рүү шилжлээ!");
+      } else {
+        const errorData = await res.json();
+        alert(errorData.message || "Алдаа гарлаа");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Хүргэлт рүү шилжүүлж чадсангүй");
+    }
+  };
   const deleteSelectedOrders = async () => {
     if (selectedOrders.length === 0) return;
     if (
@@ -65,7 +95,7 @@ const Confirmed = () => {
     try {
       await Promise.all(
         selectedOrders.map((id) =>
-          fetch(`https://lyly-gifts-backend.onrender.com/api/orders/${id}`, {
+          fetch(`http://localhost:8000/api/orders/${id}`, {
             method: "DELETE",
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -109,7 +139,6 @@ const Confirmed = () => {
         </p>
       ) : (
         <>
-          {/* Багцаар ажиллах хэсэг */}
           <div className="flex flex-wrap gap-4 items-center justify-between mb-6 bg-white p-4 rounded-lg shadow-sm">
             <div className="flex items-center gap-2">
               <input
@@ -185,13 +214,20 @@ const Confirmed = () => {
                     </span>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => deleteOrder(o._id)}
-                  className="mt-4 w-full bg-red-50 text-red-600 py-2 rounded border border-red-100 hover:bg-red-100 transition-colors"
-                >
-                  Түүхээс устгах
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => deleteOrder(o._id)}
+                    className="mt-4 w-full bg-red-50 text-red-600 py-2 rounded border border-red-100 hover:bg-red-100 transition-colors"
+                  >
+                    Устгах
+                  </button>
+                  <button
+                    onClick={() => DeliverOrder(o)}
+                    className="mt-4 w-full bg-blue-50 text-blue-600 py-2 rounded border border-blue-100 hover:bg-blue-100 transition-colors"
+                  >
+                    Хүргэлт
+                  </button>
+                </div>
               </div>
             ))}
           </div>

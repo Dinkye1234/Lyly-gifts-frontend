@@ -4,32 +4,57 @@ import React, {
   useState,
   useMemo,
   useEffect,
+  useRef,
 } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-  const [items, setItems] = useState(() => {
-    const saved = localStorage.getItem("cartItems");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { user } = useAuth();
+
+  const userId = useMemo(() => user?._id || user?.id || null, [user]);
+  const cartKey = useMemo(
+    () => (userId ? `cart_${userId}` : "cart_guest"),
+    [userId],
+  );
+
+  const [items, setItems] = useState([]);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(items));
-  }, [items]);
+    const saved = localStorage.getItem(cartKey);
+    if (saved) {
+      setItems(JSON.parse(saved));
+    } else {
+      setItems([]);
+    }
+
+    isInitialMount.current = true;
+  }, [cartKey]);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    localStorage.setItem(cartKey, JSON.stringify(items));
+  }, [items, cartKey]);
 
   const addItem = (item) => {
     setItems((prev) => {
+      const itemId = item._id || item.id || item.productId;
       const existing = prev.find(
-        (i) => i.id === item.id || i.productId === item.id
+        (i) => (i._id || i.id || i.productId) === itemId,
       );
+
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id || i.productId === item.id
+          (i._id || i.id || i.productId) === itemId
             ? { ...i, quantity: i.quantity + 1 }
-            : i
+            : i,
         );
       }
       return [...prev, { ...item, quantity: 1 }];
@@ -39,27 +64,35 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = (id, newQuantity) => {
     setItems((prev) =>
       prev.map((item) =>
-        item.id === id || item.productId === id
+        (item._id || item.id || item.productId) === id
           ? { ...item, quantity: Math.max(newQuantity, 1) }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
   const removeItem = (id) => {
     setItems((prev) =>
-      prev.filter((item) => item.id !== id && item.productId !== id)
+      prev.filter((item) => (item._id || item.id || item.productId) !== id),
     );
+  };
+
+  const clearCart = () => {
+    setItems([]);
+    localStorage.removeItem(cartKey);
   };
 
   const totalItems = useMemo(
     () => items.reduce((sum, item) => sum + item.quantity, 0),
-    [items]
+    [items],
   );
-
   const totalPrice = useMemo(
-    () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-    [items]
+    () =>
+      items.reduce(
+        (sum, item) => sum + (Number(item.price) || 0) * item.quantity,
+        0,
+      ),
+    [items],
   );
 
   return (
@@ -69,6 +102,7 @@ export const CartProvider = ({ children }) => {
         addItem,
         updateQuantity,
         removeItem,
+        clearCart,
         totalItems,
         totalPrice,
       }}

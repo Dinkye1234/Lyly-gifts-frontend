@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // LocalStorage-аас хэрэглэгчийн мэдээлэл авах
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -23,14 +22,13 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  // Нэвтрэх функц
   const login = async (email, password) => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     if (email && password) {
       const mockUser = {
-        id: "1",
+        id: btoa(email).substring(0, 12),
         email,
         name: email.split("@")[0],
       };
@@ -39,19 +37,17 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
       return true;
     }
-
     setIsLoading(false);
     return false;
   };
 
-  // Бүртгүүлэх функц
   const register = async (email, password, name) => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     if (email && password && name) {
       const mockUser = {
-        id: "1",
+        id: btoa(email).substring(0, 12),
         email,
         name,
       };
@@ -60,27 +56,19 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
       return true;
     }
-
     setIsLoading(false);
     return false;
   };
 
-  // Гарах функц
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+
+    window.location.href = "/login";
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        register,
-        logout,
-        isLoading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import ProductCard from "../../Components/ProductCard";
 
-const API = "https://lyly-gifts-backend.onrender.com/api/product";
+const API = "http://localhost:8000/api/product";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -117,12 +117,8 @@ const Home = () => {
                 <span>Захиалгаа өгөөрэй</span>
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button className="px-8 py-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm text-gray-900 dark:text-white font-semibold rounded-full hover:bg-white/90 dark:hover:bg-gray-800/90 transition-all duration-300 border border-white/20 shadow-sm">
-                Илүү ихийг
-              </button>
             </div>
 
-            {/* AI Suggestion Feature - Утас руу шилжих товч */}
             <div className="glassmorphism dark:glassmorphism-dark rounded-3xl p-8 max-w-2xl mx-auto animate-scale-in border border-white/40 shadow-2xl">
               <div className="flex items-center justify-center space-x-2 mb-4">
                 <Sparkles className="h-6 w-6 text-purple-500 animate-bounce" />
@@ -131,8 +127,8 @@ const Home = () => {
                 </span>
               </div>
               <p className="text-gray-600 dark:text-gray-300 mb-6 italic">
-                "Яг одоо хэнд бэлэг авахаа мэдэхгүй байна уу? Манай AI танд 10
-                секундэд тусална."
+                "Яамар бэлэг авахаа сонгож байна уу? Манай AI танд 10 секундэд
+                тусална."
               </p>
               <Link
                 to="/lily-ai"
